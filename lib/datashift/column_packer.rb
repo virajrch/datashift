@@ -33,7 +33,7 @@ module DataShift
     def to_headers( records, associations = nil, options = {} )
       return if( !records.first.is_a?(ActiveRecord::Base) || records.empty?)
 
-      only = *options[:only] ? [*options[:only]] : nil
+      only = options[:only] ? [*options[:only]] : nil
 
       headers =[]
 
@@ -71,7 +71,7 @@ module DataShift
 
       return "" if(record.nil? || (record.respond_to?(:each) && record.empty?) )
 
-      with_only = *options[:with_only] ? [*options[:with_only]] : nil
+      with_only = options[:with_only] ? [*options[:with_only]] : nil
 
       return record.to_json if(options[:json] && !with_only) # packs associations into single column
 
@@ -106,7 +106,7 @@ module DataShift
         if(options[:json])#
           return data.to_json
         else
-          "#{Delimiters::attribute_list_start}#{data.join(Delimiters::multi_value_delim)}#{Delimiters::attribute_list_end}"
+          return "#{Delimiters::attribute_list_start}#{data.join(Delimiters::multi_value_delim)}#{Delimiters::attribute_list_end}"
         end
 
       end
