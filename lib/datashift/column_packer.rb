@@ -54,6 +54,7 @@ module DataShift
       else
 
         headers = records.first.class.columns.collect( &:name )
+        headers += [*options[:methods]] if options[:methods]
       end
 
       headers

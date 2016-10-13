@@ -43,7 +43,7 @@ module DataShift
 
       CSV.open( (options[:filename] || filename), "w" ) do |csv|
 
-        csv.ar_to_headers( records )
+        csv.ar_to_headers( records, nil, options )
 
         records.each do |r|
           next unless(r.is_a?(ActiveRecord::Base))
