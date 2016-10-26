@@ -64,7 +64,7 @@ module DataShift
 
     def self.string_to_hash( str )
       h = {}
-      str.gsub(/[{}:]/,'').split(', ').map do |e|
+      str.gsub(/[{}:]/,'').split(',').map do |e|
         k,v = e.split('=>')
 
         k.strip!
@@ -72,12 +72,11 @@ module DataShift
 
         if( v.match(/['"]/) )
           h[k] = v.gsub(/["']/, '')
-        elsif( v.match(/^\d+$|^\d*\.\d+$|^\.\d+$/) )
+        elsif( v.match(/^\d*\.\d+$|^\.\d+$/) )
           h[k] = v.to_f
         else
           h[k] = v
         end
-        h
       end
 
       h
@@ -188,7 +187,6 @@ module DataShift
         end
 
       elsif( current_method_detail.operator_for(:has_one) )
-
         #puts "DEBUG : HAS_MANY :  #{@name} : #{operator}(#{operator_class}) - Lookup #{@current_value} in DB"
         if(current_value.is_a?(current_method_detail.operator_class))
           record.send(operator + '=', current_value)
@@ -254,7 +252,11 @@ module DataShift
         # TODO - DRY all this
         if(method_detail.find_by_operator)
 
-          item = method_detail.operator_class.where(method_detail.find_by_operator => value).first_or_create
+          if(current_attribute_hash)
+            item = method_detail.operator_class.where(current_attribute_hash).first_or_create
+          else
+            item = method_detail.operator_class.where(method_detail.find_by_operator => value).first_or_create
+          end
 
           if(item)
             logger.info("Populator assigning #{item.inspect} to belongs_to association #{operator}")
