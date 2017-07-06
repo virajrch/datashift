@@ -34,6 +34,10 @@ module DataShift
       #   :instance_methods => if true include instance method type 'setters' as well as model's pure columns
       #
       def self.populate(klass, options = {} )
+        # Added to ensure instance method (For ex. sku) on a class (For ex. Product) is also added to method_details so that there can be mapping of header
+        #currently 'sku' is added in force_inclusion parameter but it is case sensistive
+        # so if the header name is SKU there will be no mapping
+        options[:instance_methods] = true if options[:instance_methods].nil?
 
         raise "Cannot find operators supplied klass nil #{klass}" if klass.nil?
 
@@ -158,10 +162,8 @@ module DataShift
           rescue => x
             raise DataShiftException, "Failed to process column_names for class #{klass} - #{x.message}"
           end
-
           # get into consistent format with other assignments names i.e remove the = for now
           assignments[klass] += setters(klass).map { |i| i.delete('=') } if include_instance_methods
-
           # Now remove all the associations
           assignments[klass] -= has_many[klass]   if has_many[klass]
           assignments[klass] -= belongs_to[klass] if belongs_to[klass]
@@ -171,7 +173,6 @@ module DataShift
           # assignments => tax_id  but already in belongs_to => tax
 
           assignments[klass].uniq!
-
           assignments[klass].each do |assign|
             column_types[klass] ||= {}
             column_def = klass.columns.find { |col| col.name == assign }

@@ -55,6 +55,7 @@ module DataShift
     # population messages for specific Method bindings
 
     def prepare_and_assign_method_binding(method_binding, record, data)
+
       prepare_data(method_binding, data)
 
       assign(method_binding, record)

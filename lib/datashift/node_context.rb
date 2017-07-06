@@ -45,7 +45,6 @@ module DataShift
     def process
       populator.prepare_and_assign(self, doc_context.load_object, data)
     rescue => x
-
       failed = FailureData.new( doc_context.load_object, self, x.message)
 
       failed.error_messages <<  "Failed to process node : #{method_binding.pp}"

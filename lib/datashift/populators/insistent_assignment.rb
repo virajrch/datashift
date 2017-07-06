@@ -29,7 +29,6 @@ module DataShift
       end
 
       def self.call(record, value, operator)
-
         logger.debug("Attempting Brute force assignment of value #{value} => [#{operator}]")
 
         return if(attempt(record, value, operator))
@@ -53,7 +52,6 @@ module DataShift
             end
           end
         end
-
         raise DataProcessingError, "Failed to assign [#{value}] to #{operator}" unless value.nil?
 
       end
@@ -64,10 +62,11 @@ module DataShift
         def attempt(record, value, operator)
           begin
             record.send(operator, value)
-          rescue
-            logger.debug("Brute forced failed for [#{operator}, #{value}]")
+          rescue => e
+            logger.debug("Brute forced failed for [#{operator}, #{value}] with reason #{ e.message }")
             return false
           end
+
           logger.debug("Brute forced success using [#{operator}]")
           true
         end
